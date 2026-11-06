@@ -9,6 +9,7 @@
   --text-muted: #64748b;
   --success-color: #059669;
   --warning-color: #d97706;
+  --error-color: #dc2626;
 }
 
 * {
@@ -49,6 +50,114 @@ body {
   font-weight: 500;
 }
 
+/* Card de Acesso / Login */
+.card-acesso {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 450px;
+  margin: 0 auto 30px auto;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.card-acesso h2 {
+  color: var(--dark-blue);
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.info-aluno {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dark-blue);
+}
+
+.form-group input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  border-color: var(--primary-blue);
+}
+
+/* Botões */
+button {
+  background: var(--primary-blue);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button:hover {
+  background: var(--dark-blue);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.btn-secundario {
+  background: var(--text-muted);
+}
+
+.btn-secundario:hover {
+  background: #475569;
+}
+
+.painel-acoes {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Mensagens de Status */
+.mensagem-status {
+  margin-top: 15px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  min-height: 24px;
+}
+
+.mensagem-status.erro {
+  color: var(--error-color);
+}
+
+.mensagem-status.sucesso {
+  color: var(--success-color);
+}
+
+.mensagem-status.info {
+  color: var(--primary-blue);
+}
+
 /* Cards de Resumo (Efeito Vidro) */
 .cards-grid {
   display: grid;
@@ -69,7 +178,6 @@ body {
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-/* Efeito ao passar o mouse no card */
 .card:hover {
   background: rgba(255, 255, 255, 0.7);
   transform: translateY(-3px);
@@ -126,13 +234,28 @@ th {
   font-size: 0.95rem;
 }
 
-/* Efeito ao passar o mouse nas linhas da tabela */
 tbody tr {
   transition: background-color 0.2s ease;
 }
 
 tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Inputs de Edição na Tabela */
+.input-edicao {
+  width: 60px;
+  padding: 6px;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.input-edicao.invalido {
+  border-color: var(--error-color);
+  background: #fef2f2;
 }
 
 /* Estilos das Situações */
