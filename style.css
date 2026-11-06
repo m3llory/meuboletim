@@ -1,0 +1,152 @@
+/* Configurações gerais e cores */
+:root {
+  --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  --primary-blue: #0284c7;
+  --dark-blue: #0c4a6e;
+  --card-bg: rgba(255, 255, 255, 0.45);
+  --card-border: rgba(255, 255, 255, 0.6);
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --success-color: #059669;
+  --warning-color: #d97706;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Cabeçalho */
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-top: 10px;
+}
+
+.header h1 {
+  color: var(--dark-blue);
+  font-size: 2.2rem;
+  margin-bottom: 5px;
+}
+
+.header .subtitle {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Cards de Resumo (Efeito Vidro) */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+/* Efeito ao passar o mouse no card */
+.card:hover {
+  background: rgba(255, 255, 255, 0.7);
+  transform: translateY(-3px);
+}
+
+.card h3 {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary-blue);
+}
+
+.card-subtext {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 4px;
+}
+
+/* Tabela Responsiva */
+.table-container {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 20px;
+  overflow-x: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 600px;
+}
+
+th, td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+th {
+  color: var(--dark-blue);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Efeito ao passar o mouse nas linhas da tabela */
+tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Estilos das Situações */
+.situacao-bom {
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.situacao-atencao {
+  color: var(--warning-color);
+  font-weight: 600;
+}
+
+.situacao-indisponivel {
+  color: var(--text-muted);
+  font-style: italic;
+}
