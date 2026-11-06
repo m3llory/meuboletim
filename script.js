@@ -201,4 +201,180 @@ function renderizarBoletim() {
 
     const tr = document.createElement("tr");
 
-    if (modo
+    if (modoEdicao) {
+      // Modo de Edição com Inputs
+      tr.innerHTML = `
+        <td></td>
+        <td><input type="text" class="input-edicao" id="input-tri1-${idx}" value="${formatarValorInput(item.tri1)}"></td>
+        <td><input type="text" class="input-edicao" id="input-tri2-${idx}" value="${formatarValorInput(item.tri2)}"></td>
+        <td><input type="text" class="input-edicao" id="input-tri3-${idx}" value="${formatarValorInput(item.tri3)}"></td>
+        <td><strong>${media !== null ? media.toFixed(1).replace(".", ",") : "—"}</strong></td>
+        <td>
+          <input type="text" class="input-edicao" id="input-f1-${idx}" value="${faltasArray[0] ?? 0}" title="Faltas 1º Tri">
+          <input type="text" class="input-edicao" id="input-f2-${idx}" value="${faltasArray[1] ?? 0}" title="Faltas 2º Tri">
+          <input type="text" class="input-edicao" id="input-f3-${idx}" value="${faltasArray[2] ?? 0}" title="Faltas 3º Tri">
+        </td>
+        <td class="${situacaoClasse}">${situacaoTexto}</td>
+      `;
+      // Preenchimento seguro do nome da disciplina contra XSS
+      tr.cells[0].appendChild(document.createTextNode(item.disciplina));
+    } else {
+      // Modo de Visualização Padrão
+      tr.innerHTML = `
+        <td><strong></strong></td>
+        <td>${n1 !== null ? n1.toFixed(1).replace(".", ",") : "—"}</td>
+        <td>${n2 !== null ? n2.toFixed(1).replace(".", ",") : "—"}</td>
+        <td>${n3 !== null ? n3.toFixed(1).replace(".", ",") : "—"}</td>
+        <td><strong>${media !== null ? media.toFixed(1).replace(".", ",") : "—"}</strong></td>
+        <td>${totalFaltasDisciplina}</td>
+        <td class="${situacaoClasse}">${situacaoTexto}</td>
+      `;
+      tr.cells[0].querySelector("strong").textContent = item.disciplina;
+    }
+
+    corpoTabela.appendChild(tr);
+  });
+
+  // Atualização dos Cards
+  const mediaGeralFinal = contadorMediasValidas > 0 ? (somaMedias / contadorMediasValidas).toFixed(1).replace(".", ",") : "—";
+  
+  document.getElementById("media-geral").textContent = mediaGeralFinal;
+  document.getElementById("total-faltas").textContent = acumuladorFaltasGeral;
+  document.getElementById("bom-desempenho").textContent = contagemBomDesempenho;
+  document.getElementById("precisa-atencao").textContent = contagemAtencao;
+  document.getElementById("frequencia-geral").textContent = FREQUENCIA_DEMONSTRATIVA;
+}
+
+/**
+ * Formata valores para inserção nos inputs de edição
+ */
+function formatarValorInput(valor) {
+  if (valor === null || valor === undefined || valor === "") return "";
+  const norm = normalizarNotaAntiga(valor);
+  return norm !== null ? norm.toString().replace(".", ",") : valor;
+}
+
+/**
+ * Alterna entre visualização e edição
+ */
+function alternarModoEdicao() {
+  modoEdicao = true;
+  document.getElementById("btn-editar").style.display = "none";
+  document.getElementById("btn-salvar").style.display = "inline-block";
+  document.getElementById("btn-cancelar").style.display = "inline-block";
+  renderizarBoletim();
+}
+
+/**
+ * Cancela a edição sem salvar
+ */
+function cancelarEdicao() {
+  modoEdicao = false;
+  document.getElementById("btn-editar").style.display = "inline-block";
+  document.getElementById("btn-salvar").style.display = "none";
+  document.getElementById("btn-cancelar").style.display = "none";
+  document.getElementById("mensagem-status-boletim").textContent = "";
+  renderizarBoletim();
+}
+
+/**
+ * Salva as alterações validando todas as entradas antes do envio
+ */
+async function salvarAlteracoes() {
+  const msgStatus = document.getElementById("mensagem-status-boletim");
+  exibirMensagem(msgStatus, "", "");
+
+  let temErro = false;
+  const novasDisciplinas = [];
+
+  // Coleta e valida dados de cada linha
+  for (let idx = 0; idx < dadosAtuais.length; idx++) {
+    const itemOriginal = dadosAtuais[idx];
+    
+    const inpTri1 = document.getElementById(`input-tri1-${idx}`);
+    const inpTri2 = document.getElementById(`input-tri2-${idx}`);
+    const inpTri3 = document.getElementById(`input-tri3-${idx}`);
+
+    const inpF1 = document.getElementById(`input-f1-${idx}`);
+    const inpF2 = document.getElementById(`input-f2-${idx}`);
+    const inpF3 = document.getElementById(`input-f3-${idx}`);
+
+    // Limpa destaque de erros anteriores
+    [inpTri1, inpTri2, inpTri3, inpF1, inpF2, inpF3].forEach(el => el.classList.remove("invalido"));
+
+    // Validações de Notas
+    const v1 = validarNotaEditada(inpTri1.value);
+    const v2 = validarNotaEditada(inpTri2.value);
+    const v3 = validarNotaEditada(inpTri3.value);
+
+    if (!v1.valido) { inpTri1.classList.add("invalido"); temErro = true; }
+    if (!v2.valido) { inpTri2.classList.add("invalido"); temErro = true; }
+    if (!v3.valido) { inpTri3.classList.add("invalido"); temErro = true; }
+
+    // Validações de Faltas
+    const f1 = validarFaltaEditada(inpF1.value);
+    const f2 = validarFaltaEditada(inpF2.value);
+    const f3 = validarFaltaEditada(inpF3.value);
+
+    if (!f1.valido) { inpF1.classList.add("invalido"); temErro = true; }
+    if (!f2.valido) { inpF2.classList.add("invalido"); temErro = true; }
+    if (!f3.valido) { inpF3.classList.add("invalido"); temErro = true; }
+
+    novasDisciplinas.push({
+      disciplina: itemOriginal.disciplina,
+      tri1: v1.valor,
+      tri2: v2.valor,
+      tri3: v3.valor,
+      faltas: [f1.valor ?? 0, f2.valor ?? 0, f3.valor ?? 0]
+    });
+  }
+
+  if (temErro) {
+    exibirMensagem(msgStatus, "Verifique os campos destacados em vermelho. Digite notas de 0 a 10 e faltas inteiras.", "erro");
+    return;
+  }
+
+  exibirMensagem(msgStatus, "Salvando...", "info");
+
+  try {
+    const resposta = await fetch(`${CONFIG_ALUNO.apiUrl}/api/v1/boletins/salvar`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        turma: CONFIG_ALUNO.turma,
+        numero_chamada: CONFIG_ALUNO.numeroChamada,
+        pin: pinSessao,
+        dados: {
+          disciplinas: novasDisciplinas
+        }
+      })
+    });
+
+    if (!resposta.ok) {
+      exibirMensagem(msgStatus, "Falha ao salvar dados. Tente novamente.", "erro");
+      return;
+    }
+
+    // Atualiza estado local após confirmação do servidor
+    dadosAtuais = novasDisciplinas;
+    modoEdicao = false;
+
+    document.getElementById("btn-editar").style.display = "inline-block";
+    document.getElementById("btn-salvar").style.display = "none";
+    document.getElementById("btn-cancelar").style.display = "none";
+
+    renderizarBoletim();
+    exibirMensagem(msgStatus, "Dados salvos com sucesso.", "sucesso");
+
+  } catch (erro) {
+    exibirMensagem(msgStatus, "Falha ao conectar com o servidor. Tente novamente.", "erro");
+  }
+}
+
+/**
+ * Função utilitária para exibir mensagens de status
+ */
+function exibirMensagem(elemento, texto, tipo) {
+  elemento.textContent = texto;
+  elemento.className = `mensagem-status ${tipo}`;
+}
